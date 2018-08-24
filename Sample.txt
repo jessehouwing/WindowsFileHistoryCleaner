@@ -1,0 +1,2 @@
+﻿
+remove-history --root "C:\BACKUP" --recursive --rd "(\\node_modules$|\\\$tf$|\.git$|\\locallow$|\\bin$|\\obj$|packages$)" --rf "(\.DS_Store|.lnk$|\.exe$|\.msi$|\.iso$|\.dll$)"  --verbose --whatif
