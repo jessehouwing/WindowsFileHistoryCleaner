@@ -50,9 +50,27 @@ namespace FileHistoryCleaner
 
         public override int Run(string[] remainingArguments)
         {
-            CleanDirectory(Root);
+            var foreColor = Console.ForegroundColor;
+            var backColor = Console.BackgroundColor;
 
-            return 0;
+            try
+            {
+                try
+                {
+                    CleanDirectory(Root);
+                    return 0;
+                }
+                finally
+                {
+                    Console.ForegroundColor = foreColor;
+                    Console.BackgroundColor = backColor;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return -1;
+            }
         }
 
         private void CleanDirectory(string path)
@@ -73,6 +91,7 @@ namespace FileHistoryCleaner
                 Console.WriteLine("Dir: " + path);
             }
 
+            //TODO: Handle access denied errors
             var files = Directory.EnumerateFiles(path);
 
             var groupedFiles = from file in files
@@ -81,7 +100,7 @@ namespace FileHistoryCleaner
                 group fileSnapshot by (fileSnapshot.TargetFilename);
 
             var result = from g in groupedFiles
-                select (StripFiles == null ? false : StripFiles.IsMatch(g.Key))
+                select (StripFiles != null && StripFiles.IsMatch(g.Key))
                     ? new { keep = (FileSnapshot)null, delete = g.AsEnumerable() }
                     : new { keep = g.First(), delete = g.Skip(1) };
 
@@ -100,6 +119,7 @@ namespace FileHistoryCleaner
                     Console.WriteLine("Rename: " + r.keep.Path + " => " + r.keep.TargetFilename);
                     if (!WhatIf)
                     {
+                        //TODO: What to do if the file already exists?
                         File.Move(r.keep.Path, r.keep.TargetFilename);
                     }
                 }
@@ -155,6 +175,7 @@ namespace FileHistoryCleaner
 
         private void CleanSubDirectories(string path)
         {
+            //TODO: Handle access denied errors
             foreach (var sub in Directory.EnumerateDirectories(path))
             {
                 if (StripDirectories != null && StripDirectories.IsMatch(sub))
