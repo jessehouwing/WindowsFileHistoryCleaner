@@ -81,7 +81,7 @@ namespace FileHistoryCleaner
                 group fileSnapshot by (fileSnapshot.TargetFilename);
 
             var result = from g in groupedFiles
-                select StripFiles.IsMatch(g.Key)
+                select (StripFiles == null ? false : StripFiles.IsMatch(g.Key))
                     ? new { keep = (FileSnapshot)null, delete = g.AsEnumerable() }
                     : new { keep = g.First(), delete = g.Skip(1) };
 
@@ -157,7 +157,7 @@ namespace FileHistoryCleaner
         {
             foreach (var sub in Directory.EnumerateDirectories(path))
             {
-                if (StripDirectories.IsMatch(sub))
+                if (StripDirectories != null && StripDirectories.IsMatch(sub))
                 {
                     DeleteDirectory(sub);
                 }
