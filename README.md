@@ -5,7 +5,7 @@ Simple commandline executable to turn a File History share back into a snapshot 
 ## Sample command:
 
 ```
-FileHistroyCleaner remove-history 
+FileHistoryCleaner remove-history 
     --root "C:\BACKUP" 
     --recursive 
     --rd "(\\node_modules$|\\\$tf$|\.git$|\\locallow$|\\bin$|\\obj$|packages$)" 
